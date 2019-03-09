@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/septemhill/escapestring"
+	es "github.com/septemhill/escapestring"
 )
 
 const DEFAULT_BORDER = "- │ ┌ ┐ └ ┘"
@@ -20,16 +20,21 @@ func moveToPaint(x, y int, str string) {
 }
 
 type Box struct {
-	Buffer *bytes.Buffer
-	X      int
-	Y      int
-	Width  int
-	Height int
-	Label  string
+	newbuff *bytes.Buffer
+	oldbuff *bytes.Buffer
+	X       int
+	Y       int
+	Width   int
+	Height  int
+	label   string
+}
+
+func (b *Box) Label() string {
+	return b.label
 }
 
 func (b Box) Write(p []byte) (n int, err error) {
-	return b.Buffer.Write(p)
+	return b.newbuff.Write(p)
 }
 
 func (b *Box) drawline(row, x, width int, es es.EscapeString) {
@@ -50,7 +55,15 @@ func (b *Box) Draw() {
 	var line string
 	borders := strings.Split(DEFAULT_BORDER, " ")
 	linecnt := 0
-	lines := bytes.Split(b.Buffer.Bytes(), []byte("\n"))
+
+	if len(b.newbuff.Bytes()) == 0 {
+		b.newbuff.Write(b.oldbuff.Bytes())
+	} else {
+		b.oldbuff.Reset()
+		b.oldbuff.Write(b.newbuff.Bytes())
+	}
+
+	lines := bytes.Split(b.newbuff.Bytes(), []byte("\n"))
 
 	b.clearArea()
 	for i := b.Y; i < b.Height+b.Y; i++ {
@@ -76,17 +89,18 @@ func (b *Box) Draw() {
 		line = ""
 	}
 
-	b.Buffer.Reset()
+	b.newbuff.Reset()
 }
 
 func NewBox(startX, startY, width, height int, label string) *Box {
 	box := &Box{
-		Buffer: bytes.NewBuffer(nil),
-		X:      startX,
-		Y:      startY,
-		Width:  width,
-		Height: height,
-		Label:  label,
+		newbuff: bytes.NewBuffer(nil),
+		oldbuff: bytes.NewBuffer(nil),
+		X:       startX,
+		Y:       startY,
+		Width:   width,
+		Height:  height,
+		label:   label,
 	}
 
 	return box

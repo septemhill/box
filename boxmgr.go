@@ -12,6 +12,10 @@ func (bm *BoxManager) focus(label string) {
 	bm.boxes[label].Draw()
 }
 
+func (bm *BoxManager) redraw() {
+	//TODO
+}
+
 func (bm *BoxManager) AddBox(b *Box) error {
 	if _, ok := bm.boxes[b.Label()]; ok {
 		return ERR_BOX_ALREADY_EXIST
@@ -40,9 +44,10 @@ func (bm *BoxManager) MoveBox(label string, x, y int) error {
 
 	b := bm.boxes[label]
 
-	if (x+b.Width < bm.width) && (y+b.Height < bm.height) {
+	if (x+b.Width < bm.width) && (y+b.Height < bm.height) && (x > 0) && (y > 0) {
 		b.X = x
 		b.Y = y
+		bm.redraw()
 		bm.focus(label)
 	}
 
@@ -59,6 +64,7 @@ func (bm *BoxManager) ResizeBox(label string, width, height int) error {
 	if (width+b.X < bm.width) && (height+b.Y < bm.height) {
 		b.Width = width
 		b.Height = height
+		bm.redraw()
 		bm.focus(label)
 	}
 

@@ -100,7 +100,7 @@ func (l *ListBox) updateList() {
 	}
 
 	fmt.Fprintf(l.Box, rstr)
-	l.Draw()
+	//l.Draw()
 }
 
 func NewListBox(startX, startY, width, height int, label string, list []string) *ListBox {

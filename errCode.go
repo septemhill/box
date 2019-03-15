@@ -7,4 +7,5 @@ var (
 	ERR_BOX_NON_EXIST     = errors.New("non-exist box")
 	ERR_BOX_ALREADY_EXIST = errors.New("box already existed")
 	ERR_BOX_WINDOW_SIZE   = errors.New("cannot get window size")
+	ERR_BOX_LIST_COUNT    = errors.New("list count for odd only")
 )
